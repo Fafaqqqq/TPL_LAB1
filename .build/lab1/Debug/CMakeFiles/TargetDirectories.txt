@@ -1,0 +1,5 @@
+/home/fafaq/repos/projects/cpp/theory_lang/lab1/.build/lab1/Debug/CMakeFiles/edit_cache.dir
+/home/fafaq/repos/projects/cpp/theory_lang/lab1/.build/lab1/Debug/CMakeFiles/rebuild_cache.dir
+/home/fafaq/repos/projects/cpp/theory_lang/lab1/.build/lab1/Debug/example/CMakeFiles/lab1.dir
+/home/fafaq/repos/projects/cpp/theory_lang/lab1/.build/lab1/Debug/example/CMakeFiles/edit_cache.dir
+/home/fafaq/repos/projects/cpp/theory_lang/lab1/.build/lab1/Debug/example/CMakeFiles/rebuild_cache.dir
