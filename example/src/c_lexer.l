@@ -11,6 +11,7 @@ typedef struct
   int column; // Столбец
 } Position_t;
 
+extern FILE* result;
 static Position_t Position = {1, 1}; //Текущая позиция в файле
 static bool GotError = false;// и
 
@@ -30,49 +31,65 @@ static void dropColumn(void) {Position.column = 1;}
 
 static void printLexeme(const char * tokName)
 {
-  printf("%s, \"%s\", %d, %d\n", tokName, yytext, line(), column() - yyleng);
+  fprintf(result,"%s, \"%s\", %d, %d\n", tokName, yytext, line(), column() - yyleng);
 }
 
 %}
 
-%x COMMENT
+%x COMMENT_LINE COMMENT_BLOCK
 
-digit[0-9]
-letter[a-zA-Z]
-delim[();]
-oper[<>=]
-space[ \t]
+digit [0-9]
+letter [a-zA-Z]
+delim [();,]
+space [ \t]
 
-octa[0-7]
-hex[0-9a-f]
-binary[01]
+block [{}]
+
+octa [0-7]
+hex [0-9a-f]
+binary [01]
+
+identifier ("_"|{letter})("_"|{letter}|{digit})*
+int_const [-+]?"0"?("x"{hex}+|"b"{binary}+|{octa}+|{digit}+)[uUlL]*[uUlL]*[uUlL]*
 
 %%
-"/*" { BEGIN(COMMENT); }
+"/*"                { BEGIN(COMMENT_BLOCK); }
+<COMMENT_BLOCK>.    { }
+<COMMENT_BLOCK>"*/" { BEGIN(INITIAL); }
 
-<COMMENT>.    { }
-<COMMENT>"*/" { BEGIN(INITIAL); }
+"//"                { BEGIN(COMMENT_LINE); }
+<COMMENT_LINE>\n    { BEGIN(INITIAL); }
+<COMMENT_LINE>.     { }
 
-for { printLexeme("KEYWORD");}
-do { printLexeme("KEYWORD");}
+("auto"|"double"|"int"|"struct"|"const"|"float"|"short"|"unsigned"|"break"|"long"|"continue"|"for"|"signed"|"void"|"case"|"enum"|"register"|"typedef"|"default"|"sizeof"|"char"|"volatile"|"extern"|"return"|"union"|"do"|"static"|"while") { printLexeme("KEYWORD");}
 
-("_"|{letter})("_"|{letter}|{digit})* {printLexeme("IDENTIFIER");}
+("if"|"switch") { printLexeme("CONDITION OPERATOR"); }
 
-[-+]?("0")("x"{hex}+|"b"{binary}+|{octa}+)[uUlL]* {printLexeme("INT CONST");}
+("<"|">"|"<="|">="|"!="|"=="|"&&"|"||") { printLexeme("COMPARE OPERATOR"); }
+
+(([+/&|]|"*"|"%"|"-")"="?|("<<"|">>")"="?) {printLexeme("ARITHMETIC OPERATOR");}
+
+= { printLexeme("ASSIGN OPERATOR"); }
+
+("goto"{space}+("_"|{letter}|{digit})+) {printLexeme("UNCONDITION JUMP OPERATOR"); }
+
+{identifier} { printLexeme("IDENTIFIER"); }
+
+{int_const} {printLexeme("INT CONST");}
 
 [-+]?({digit}*\.{digit}+|{digit}+\.)([eE][-+]?{digit}+)?[fF]? {printLexeme("FLOAT CONST");}
 
-(\"|\')({letter}*|{digit}*)(\"\') { printLexeme("STRING LITERAL"); }
+(\".*\")|(\'.*\')  { printLexeme("STRING LITERAL"); }
 
-("_"|{letter})("_"|{letter}|{digit})+"["({digit}+|{letter}+)"]" { printLexeme("INDEXING VARIABLE"); }
+("_"|{letter})("_"|{letter}|{digit})+"["({identifier}|{int_const})"]" { printLexeme("INDEXING VARIABLE"); }
 
-{oper} { printLexeme("OPERATION");}
+{block} { printLexeme("BLOCK OPERATOR"); }
 
-":=" { printLexeme("OPERATION");}
+{space}+ {}
+
+(("_"|{letter}|{digit})|"case"{space}+)+":" { printLexeme("LABLE"); }
 
 {delim} { printLexeme("DELIMITER");}
-
-{space}+ { }
 
 \r?\n/(.|\n) { dropColumn(); incrLine(1);}
 

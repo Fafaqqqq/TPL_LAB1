@@ -216,7 +216,8 @@ extern char *yytext;
 
 #ifdef YY_HEADER_EXPORT_START_CONDITIONS
 #define INITIAL 0
-#define COMMENT 1
+#define COMMENT_LINE 1
+#define COMMENT_BLOCK 2
 
 #endif
 
@@ -470,9 +471,9 @@ extern int yylex (void);
 #undef yyTABLES_NAME
 #endif
 
-#line 84 "c_lexer.l"
+#line 101 "c_lexer.l"
 
 
-#line 477 "c_lexer.h"
+#line 478 "c_lexer.h"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */

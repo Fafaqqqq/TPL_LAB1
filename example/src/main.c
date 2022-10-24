@@ -1,8 +1,11 @@
 #include    <stdio.h>
 #include "c_lexer.h"
 
+FILE* result = NULL;
+
 int main(int argc, char *argv[])
 {
+    result = fopen("result.txt", "w");
     if (argc != 2)
     {
         fprintf(stderr, "x: ошибка: не задан входной файл\n");
@@ -20,5 +23,6 @@ int main(int argc, char *argv[])
     res = yylex(); /* Непосредственно запуск лексического анализатора
                     */
     fclose(f);
+    fclose(result);
     return res;
 }
