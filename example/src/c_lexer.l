@@ -50,7 +50,7 @@ hex [0-9a-f]
 binary [01]
 
 identifier ("_"|{letter})("_"|{letter}|{digit})*
-int_const [-+]?"0"?("x"{hex}+|"b"{binary}+|{octa}+|{digit}+)[uUlL]*[uUlL]*[uUlL]*
+int_const [-+]?("0"?("x"{hex}+|"b"{binary}+|{octa}+)|{digit}+)[uUlL]*
 
 %%
 "/*"                { BEGIN(COMMENT_BLOCK); }
@@ -67,7 +67,7 @@ int_const [-+]?"0"?("x"{hex}+|"b"{binary}+|{octa}+|{digit}+)[uUlL]*[uUlL]*[uUlL]
 
 ("<"|">"|"<="|">="|"!="|"=="|"&&"|"||") { printLexeme("COMPARE OPERATOR"); }
 
-(([+/&|]|"*"|"%"|"-")"="?|("<<"|">>")"="?) {printLexeme("ARITHMETIC OPERATOR");}
+(([+/&|]|"*"|"%"|"-"|"<<"|">>")"="?) {printLexeme("ARITHMETIC OPERATOR");}
 
 = { printLexeme("ASSIGN OPERATOR"); }
 
@@ -87,7 +87,7 @@ int_const [-+]?"0"?("x"{hex}+|"b"{binary}+|{octa}+|{digit}+)[uUlL]*[uUlL]*[uUlL]
 
 {space}+ {}
 
-(("_"|{letter}|{digit})|"case"{space}+)+":" { printLexeme("LABLE"); }
+(("_"|{letter}|{digit})+|"case"{space}+({int_const}|{identifier}))":" { printLexeme("LABLE"); }
 
 {delim} { printLexeme("DELIMITER");}
 
