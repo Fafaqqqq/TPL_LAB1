@@ -7,7 +7,6 @@ typedef int _int;
 
 int main(int argc, char* argv)
 {
-
   __:
   int a = 0;
   int c = 122;

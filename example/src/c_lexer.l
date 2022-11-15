@@ -50,7 +50,9 @@ hex [0-9a-f]
 binary [01]
 
 identifier ("_"|{letter})("_"|{letter}|{digit})*
-int_const [-+]?("0"?("x"{hex}+|"b"{binary}+|{octa}+)|{digit}+)[uUlL]*
+int_const [-+]?("0"?("x"{hex}+|"b"{binary}+|{octa}+)|{digit}+)[uUlL]?[uUlL]?
+arithm_oper ([+/&|]|"*"|"%"|"-"|"<<"|">>")
+
 
 %%
 "/*"                { BEGIN(COMMENT_BLOCK); }
@@ -61,17 +63,15 @@ int_const [-+]?("0"?("x"{hex}+|"b"{binary}+|{octa}+)|{digit}+)[uUlL]*
 <COMMENT_LINE>\n    { BEGIN(INITIAL); }
 <COMMENT_LINE>.     { }
 
-("auto"|"double"|"int"|"struct"|"const"|"float"|"short"|"unsigned"|"break"|"long"|"continue"|"for"|"signed"|"void"|"case"|"enum"|"register"|"typedef"|"default"|"sizeof"|"char"|"volatile"|"extern"|"return"|"union"|"do"|"static"|"while") { printLexeme("KEYWORD");}
-
-("if"|"switch") { printLexeme("CONDITION OPERATOR"); }
+("auto"|"double"|"if"|"int"|"goto"|"switch"|"struct"|"const"|"float"|"short"|"unsigned"|"break"|"long"|"continue"|"for"|"signed"|"void"|"case"|"enum"|"register"|"typedef"|"default"|"sizeof"|"char"|"volatile"|"extern"|"return"|"union"|"do"|"static"|"while") { printLexeme("KEYWORD");}
 
 ("<"|">"|"<="|">="|"!="|"=="|"&&"|"||") { printLexeme("COMPARE OPERATOR"); }
 
-(([+/&|]|"*"|"%"|"-"|"<<"|">>")"="?) {printLexeme("ARITHMETIC OPERATOR");}
+{arithm_oper} {printLexeme("ARITHMETIC OPERATOR");}
+
+{arithm_oper}= { printLexeme("ARITHMETIC ASSIGN OPERATOR"); }
 
 = { printLexeme("ASSIGN OPERATOR"); }
-
-("goto"{space}+("_"|{letter}|{digit})+) {printLexeme("UNCONDITION JUMP OPERATOR"); }
 
 {identifier} { printLexeme("IDENTIFIER"); }
 
@@ -87,7 +87,7 @@ int_const [-+]?("0"?("x"{hex}+|"b"{binary}+|{octa}+)|{digit}+)[uUlL]*
 
 {space}+ {}
 
-(("_"|{letter}|{digit})+|"case"{space}+({int_const}|{identifier}))":" { printLexeme("LABLE"); }
+("_"|{letter}|{digit})+":" { printLexeme("LABLE"); }
 
 {delim} { printLexeme("DELIMITER");}
 
